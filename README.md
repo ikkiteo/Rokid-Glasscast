@@ -8,45 +8,53 @@
 |---|---|---|
 | `receiver` | очки | слушает, декодирует H.264, рисует на панели |
 | `sender` | телефон | MediaProjection → JPEG |
-| `windows/GlassCast.exe` | ПК | захват монитора или отдельного окна → H.264 |
+| `windows/GlassCast-new.exe` | ПК | захват монитора или отдельного окна → H.264 |
 
 Протокол — в `PROTOCOL.md`. Очки — сервер, отправитель только подключается.
 
 ## Как пользоваться
 
-1. Поставь на очки `receiver/build/outputs/apk/debug/receiver-debug.apk` и открой **GlassCast**. На экране появится IP.
+1. Установите приложения на очки и телефон и открой **GlassCast**. На экране появится IP.
 2. Телефон и ПК должны быть в той же Wi‑Fi сети, что и очки.
 3. На телефоне открой **GlassCast Phone**, нажми «найти очки», разреши захват экрана.
-4. На ПК запусти `windows/GlassCast.exe`, «найти очки», выбери режим и «транслировать».
+4. На ПК запусти GlassCast-new.exe, «найти очки», выбери режим и «транслировать».
 
-На очках:
+## Транслирование на ПК
 
-- одно нажатие — поворот на 90°
-- двойное — вписать / заполнить / растянуть
-- долгое — новый ключевой кадр
-- громкость — битрейт
+**ВЫБОР ИСТОЧНИКА** — позволяет выбрать: 
 
-## Режимы на ПК
+монитор - транслирует выбранный монитор как есть.
 
-**Дублирование** — в очки идёт выбранный монитор, как есть.
+зону экрана - транслирует выбранную зону на экране.
+
+окно программы - позволяет транслировать окно выбранной программы.
+
+холст очков - пока не работает.
+
+виртуальный дисплей - транслирует создаваемый программой виртуальный дисплей, который появляется после установки драйвера.
+
 
 **Виртуальный дисплей** — «драйвер дисплея» ставит монитор GlassCast и расширяет на него рабочий стол. Перетащи туда окна и транслируй этот источник. Поля вокруг картинки на очках чёрные: на панели они не светятся.
-
-**Холст** — запасной вариант без драйвера: отдельное окно, F11 разворачивает его на монитор.
 
 ## Сборка
 
 ```
-cd glasscast
+cd Rokid-Glasscast
 gradlew.bat :receiver:assembleDebug :sender:assembleDebug --offline
 windows\build.bat
 ```
 
 APK:
 
-[receiver/build/outputs/apk/debug/receiver-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — очки
-[sender/build/outputs/apk/debug/sender-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — телефон
+[dist\GlassCast-glasses.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — очки
+[dist\GlassCast-phone.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — телефон
 
-Exe: [windows/GlassCast.exe](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) (один файл, .NET Framework 4.8, ставить нужно только driver\usbmmidd при использовании виртуального дисплея).
+Exe: [dist\GlassCast-new.exe](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) (один файл, .NET Framework 4.8, ставить нужно только driver\usbmmidd при использовании виртуального дисплея).
 
 И телефон, и Windows шлют Motion-JPEG: приёмник на очках рисует его напрямую, без аппаратного декодера. Поля над и под картинкой — чистый чёрный, на очках они не загораются.
+
+##ВАЖНО
+
+**ВИРТУАЛЬНЫЙ ДИСПЛЕЙ НЕ ЗАРАБОТАЕТ БЕЗ УСТАНОВКИ ДРАЙВЕРА driver\usbmmidd**
+
+**ПОСЛЕ УСТАНОВКИ ДРАЙВЕРА WINDOWS МОЖЕТ ВКЛЮЧИТЬ ТЕСТОВЫЙ РЕЖИМ - ВЫКЛЮЧЕНИЕ ТЕСТОГО РЕЖИМА КОМАНДАМИ В CMD "bcdedit -set TESTSIGNING OFF" И "bcdedit -set NOINTEGRITYCHECKS OFF"**
