@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "dev.glasscast.receiver-debug-29:/drawable_ic_glass.xml.flat",
+        "source": "dev.glasscast.receiver-main-31:/drawable/ic_glass.xml"
+    },
+    {
+        "merged": "dev.glasscast.receiver-debug-29:/layout_activity_cast.xml.flat",
+        "source": "dev.glasscast.receiver-main-31:/layout/activity_cast.xml"
+    }
+]

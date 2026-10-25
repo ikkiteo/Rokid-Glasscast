@@ -1,0 +1,2 @@
+MFStartup 0x0
+jpeg 6936 bytes from DISPLAY1
