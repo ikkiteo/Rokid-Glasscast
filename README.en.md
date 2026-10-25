@@ -66,6 +66,13 @@ On the glasses, one tap rotates the picture by 90°. A double tap asks for a fre
 
 **Virtual display.** Display driver installs the Amyuni driver once. The 1920×1080 monitor turns on only while that source is streaming and turns off when the stream stops. The first launch asks for administrator rights; after that a small service toggles the monitor. Drag windows onto it and stream it.
 
+The virtual display does nothing until `driver\usbmmidd` is installed. Windows sometimes turns on test signing after that install. An administrator command prompt turns it back off:
+
+```bat
+bcdedit -set TESTSIGNING OFF
+bcdedit -set NOINTEGRITYCHECKS OFF
+```
+
 **Canvas.** A spare window when you do not want a driver. F11 fills the current monitor. It is not a separate Windows display.
 
 Bars above and below the picture are pure black, so those pixels do not light up on the glasses.
