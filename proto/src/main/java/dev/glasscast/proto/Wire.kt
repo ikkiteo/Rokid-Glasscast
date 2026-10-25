@@ -111,12 +111,12 @@ class FrameReader(stream: InputStream) {
     fun hello(): Hello {
         val magic = ByteArray(4)
         input.readFully(magic)
-        if (String(magic, Charsets.US_ASCII) != Wire.MAGIC) error("чужой поток: ${String(magic)}")
+        if (String(magic, Charsets.US_ASCII) != Wire.MAGIC) error(Text.t("чужой поток: ${String(magic)}", "unknown stream: ${String(magic)}"))
         val lo = input.read()
         val hi = input.read()
         if (lo < 0 || hi < 0) throw EOFException()
         val len = (hi shl 8) or lo
-        if (len <= 0 || len > 4096) error("плохая длина приветствия: $len")
+        if (len <= 0 || len > 4096) error(Text.t("плохая длина приветствия: $len", "bad hello length: $len"))
         val json = ByteArray(len)
         input.readFully(json)
         return Hello.parse(String(json, Charsets.UTF_8))
@@ -133,7 +133,7 @@ class FrameReader(stream: InputStream) {
         val kind = head[0].toInt() and 0xFF
         val size = int(head, 1)
         val pts = long(head, 5)
-        if (size < 0 || size > Wire.MAX_FRAME) error("битый кадр: $size байт")
+        if (size < 0 || size > Wire.MAX_FRAME) error(Text.t("битый кадр: $size байт", "broken frame: $size bytes"))
         val body = if (size == 0) EMPTY else ByteArray(size).also { input.readFully(it) }
         return Packet(kind, body, pts)
     }

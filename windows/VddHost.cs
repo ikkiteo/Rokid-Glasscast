@@ -66,7 +66,7 @@ namespace GlassCast
                     var reader = new StreamReader(pipe, Encoding.UTF8);
                     var writer = new StreamWriter(pipe, new UTF8Encoding(false)) { AutoFlush = true };
                     string cmd = reader.ReadLine();
-                    string ans = "err команда";
+                    string ans = Lang.T("err команда", "err command");
                     if (cmd == "ping") ans = "ok";
                     else if (cmd == "on") ans = VddCtl.Enable(true);
                     else if (cmd == "off") ans = VddCtl.Enable(false);

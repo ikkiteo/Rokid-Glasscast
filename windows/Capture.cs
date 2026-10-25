@@ -14,7 +14,7 @@ namespace GlassCast
         public bool Primary;
         public override string ToString()
         {
-            string tag = Primary ? "основной" : "доп.";
+            string tag = Primary ? Lang.T("основной", "primary") : Lang.T("доп.", "extra");
             string label = string.IsNullOrEmpty(Friendly) ? Name : Friendly;
             return label + "  " + Bounds.Width + "×" + Bounds.Height + "  " + tag;
         }
@@ -226,7 +226,7 @@ namespace GlassCast
         {
             if (string.IsNullOrEmpty(s)) s = "DXGI";
             if (s.Length > 140) s = s.Substring(0, 140);
-            return "курсор может мигать: " + s;
+            return Lang.T("курсор может мигать: ", "the cursor may flicker: ") + s;
         }
 
         void Contain(IntPtr dstDc, IntPtr from, int sx, int sy, int sw, int sh)

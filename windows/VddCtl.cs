@@ -33,7 +33,7 @@ namespace GlassCast
         public static string Enable(bool on)
         {
             string dir = Folder();
-            if (dir == null) return "err нет пакета драйвера";
+            if (dir == null) return Lang.T("err нет пакета драйвера", "err driver package is missing");
             string exe = Path.Combine(dir, "deviceinstaller64.exe");
             string result = Run(exe, on ? "enableidd 1" : "enableidd 0", dir, 30000);
             if (result != null && result.StartsWith("FAIL")) return "err " + result.Substring(5).Trim();
@@ -43,7 +43,7 @@ namespace GlassCast
         public static string InstallService()
         {
             string exe = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VddHost.exe");
-            if (!File.Exists(exe)) return "нет VddHost.exe";
+            if (!File.Exists(exe)) return Lang.T("нет VddHost.exe", "VddHost.exe is missing");
             string binPath = exe.IndexOf(' ') >= 0 ? "\"\\\"" + exe + "\\\"\"" : exe;
             string bin = "binPath= " + binPath;
             var log = new StringBuilder();
@@ -51,7 +51,7 @@ namespace GlassCast
             {
                 string c = Run("sc.exe", "create " + Service + " " + bin + " start= auto", null, 15000);
                 log.AppendLine(c ?? "");
-                if (c != null && c.StartsWith("FAIL")) return "служба: " + c.Substring(5).Trim();
+                if (c != null && c.StartsWith("FAIL")) return Lang.T("служба: ", "service: ") + c.Substring(5).Trim();
             }
             else
             {
@@ -59,19 +59,19 @@ namespace GlassCast
                 Thread.Sleep(500);
                 string c = Run("sc.exe", "config " + Service + " " + bin, null, 15000);
                 log.AppendLine(c ?? "");
-                if (c != null && c.StartsWith("FAIL")) return "служба: " + c.Substring(5).Trim();
+                if (c != null && c.StartsWith("FAIL")) return Lang.T("служба: ", "service: ") + c.Substring(5).Trim();
             }
             string started = Run("sc.exe", "start " + Service, null, 20000);
             log.AppendLine(started ?? "");
             if (started != null && started.StartsWith("FAIL") && started.IndexOf("1056") < 0)
-                return "запуск службы: " + started.Substring(5).Trim();
+                return Lang.T("запуск службы: ", "service start: ") + started.Substring(5).Trim();
             for (int i = 0; i < 25; i++)
             {
                 string pong = Ask("ping");
                 if (pong != null && pong.StartsWith("ok")) return null;
                 Thread.Sleep(200);
             }
-            return "служба не открыла канал. " + log.ToString().Trim();
+            return Lang.T("служба не открыла канал. ", "the service did not open its channel. ") + log.ToString().Trim();
         }
 
         public static PipeSecurity Security()
@@ -130,9 +130,9 @@ namespace GlassCast
                 };
                 if (!string.IsNullOrEmpty(cwd)) info.WorkingDirectory = cwd;
                 var p = Process.Start(info);
-                if (p == null) return "FAIL не запустился " + file;
+                if (p == null) return "FAIL " + Lang.T("не запустился ", "did not start ") + file;
                 string o = p.StandardOutput.ReadToEnd() + p.StandardError.ReadToEnd();
-                if (!p.WaitForExit(ms)) return "FAIL таймаут " + file;
+                if (!p.WaitForExit(ms)) return "FAIL " + Lang.T("таймаут ", "timed out ") + file;
                 if (p.ExitCode != 0 && p.ExitCode != 3010) return "FAIL " + file + " " + p.ExitCode + " " + o;
                 return o;
             }

@@ -12,7 +12,7 @@ namespace GlassCast
     {
         public GlassCanvas(int w, int h)
         {
-            Text = "GlassCast — холст очков";
+            Text = Lang.T("GlassCast — холст очков", "GlassCast — glasses canvas");
             FormBorderStyle = FormBorderStyle.Sizable;
             StartPosition = FormStartPosition.CenterScreen;
             BackColor = Color.FromArgb(32, 56, 40);
@@ -26,7 +26,9 @@ namespace GlassCast
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = Color.FromArgb(53, 232, 160),
                 Font = new Font("Consolas", 12f),
-                Text = "это запасной холст, не монитор Windows\n\nдля отдельного экрана нажми «драйвер дисплея»,\nзатем источник «виртуальный дисплей» —\nмонитор включится только на время трансляции\n\nF11 разворачивает этот холст на текущий монитор"
+                Text = Lang.T(
+                    "это запасной холст, не монитор Windows\n\nдля отдельного экрана нажми «драйвер дисплея»,\nзатем источник «виртуальный дисплей» —\nмонитор включится только на время трансляции\n\nF11 разворачивает этот холст на текущий монитор",
+                    "This is a spare canvas, not a Windows monitor.\n\nFor a separate screen, press Display driver,\nthen choose Virtual display —\nthe monitor turns on only while you stream.\n\nF11 fills the current monitor.")
             };
             Controls.Add(hint);
             KeyPreview = true;
@@ -77,7 +79,7 @@ namespace GlassCast
 
         public MainForm()
         {
-            Text = "GlassCast";
+            Text = Lang.T("GlassCast", "GlassCast EN");
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = FormStartPosition.CenterScreen;
@@ -88,15 +90,15 @@ namespace GlassCast
 
             int y = 14;
             Add(Title("GLASSCAST"), 16, y, 500, 28); y += 26;
-            Add(Muted("экран компьютера → очки"), 16, y, 500, 18); y += 28;
+            Add(Muted(Lang.T("экран компьютера → очки", "computer screen → glasses")), 16, y, 500, 18); y += 28;
 
-            Button scan = Action("найти очки");
+            Button scan = Action(Lang.T("найти очки", "find glasses"));
             scan.Click += (s, e) => Scan();
             Add(scan, 16, y, 150, 32);
             StyleBox(ip);
             Add(Muted("IP"), 176, y - 16, 40, 16);
             Add(ip, 176, y, 210, 28);
-            Button use = Action("взять");
+            Button use = Action(Lang.T("взять", "use"));
             use.Click += (s, e) => PickTyped();
             Add(use, 396, y, 128, 32);
             y += 44;
@@ -110,15 +112,15 @@ namespace GlassCast
             };
             Add(glasses, 16, y, 508, 28); y += 40;
 
-            Add(Muted("источник"), 16, y, 200, 16); y += 18;
+            Add(Muted(Lang.T("источник", "source")), 16, y, 200, 16); y += 18;
             StyleBox(source);
             source.DropDownStyle = ComboBoxStyle.DropDownList;
             source.Items.AddRange(new object[] {
-                "монитор",
-                "зона экрана",
-                "окно программы",
-                "холст очков",
-                "виртуальный дисплей GlassCast"
+                Lang.T("монитор", "monitor"),
+                Lang.T("зона экрана", "screen region"),
+                Lang.T("окно программы", "app window"),
+                Lang.T("холст очков", "glasses canvas"),
+                Lang.T("виртуальный дисплей GlassCast", "GlassCast virtual display")
             });
             source.SelectedIndex = 0;
             source.SelectedIndexChanged += (s, e) => SyncSource();
@@ -126,71 +128,71 @@ namespace GlassCast
 
             StyleBox(monitors);
             monitors.DropDownStyle = ComboBoxStyle.DropDownList;
-            Add(Muted("монитор"), 16, y, 200, 16); y += 18;
+            Add(Muted(Lang.T("монитор", "monitor")), 16, y, 200, 16); y += 18;
             Add(monitors, 16, y, 508, 28); y += 40;
 
-            pickZone.Text = "выделить зону";
+            pickZone.Text = Lang.T("выделить зону", "pick a region");
             StyleAction(pickZone);
             pickZone.Click += (s, e) => PickZone();
             Add(pickZone, 16, y, 180, 32);
             zoneLbl.ForeColor = Color.FromArgb(122, 168, 154);
-            zoneLbl.Text = "зона не выбрана";
+            zoneLbl.Text = Lang.T("зона не выбрана", "no region yet");
             Add(zoneLbl, 206, y, 318, 32); y += 40;
 
             StyleBox(windows);
             windows.DropDownStyle = ComboBoxStyle.DropDownList;
-            refreshWin.Text = "окна";
+            refreshWin.Text = Lang.T("окна", "windows");
             StyleAction(refreshWin);
             refreshWin.Click += (s, e) => ReloadWindows();
-            Add(Muted("окно программы"), 16, y, 200, 16); y += 18;
+            Add(Muted(Lang.T("окно программы", "app window")), 16, y, 200, 16); y += 18;
             Add(windows, 16, y, 390, 28);
             Add(refreshWin, 414, y, 110, 28); y += 40;
 
-            Button open = Action("открыть холст");
+            Button open = Action(Lang.T("открыть холст", "open canvas"));
             open.Click += (s, e) => OpenCanvas();
             Add(open, 16, y, 250, 32);
-            Button idd = Action("драйвер дисплея");
+            Button idd = Action(Lang.T("драйвер дисплея", "display driver"));
             idd.Click += (s, e) => InstallIdd();
             Add(idd, 274, y, 250, 32); y += 44;
 
             StyleBox(size);
             size.DropDownStyle = ComboBoxStyle.DropDownList;
             size.Items.AddRange(new object[] {
-                "2× панель очков",
+                Lang.T("2× панель очков", "2× glasses panel"),
                 "1280×720",
-                "чёткий (до 1280)",
-                "полный монитор"
+                Lang.T("чёткий (до 1280)", "sharp (up to 1280)"),
+                Lang.T("полный монитор", "full monitor")
             });
             size.SelectedIndex = 0;
             StyleBox(fps);
             fps.DropDownStyle = ComboBoxStyle.DropDownList;
             fps.Items.AddRange(new object[] { "30", "60", "90" });
             fps.SelectedIndex = 0;
-            Add(Muted("размер потока"), 16, y, 200, 16);
-            Add(Muted("к/с"), 300, y, 80, 16); y += 18;
+            Add(Muted(Lang.T("размер потока", "stream size")), 16, y, 200, 16);
+            Add(Muted(Lang.T("к/с", "fps")), 300, y, 80, 16); y += 18;
             Add(size, 16, y, 270, 28);
             Add(fps, 300, y, 80, 28); y += 44;
 
             bitrate.Minimum = 2; bitrate.Maximum = 20; bitrate.Value = 6;
             bitrate.TickFrequency = 2;
             bitrate.BackColor = BackColor;
-            bitrate.ValueChanged += (s, e) => bitrateLbl.Text = "качество JPEG  " + bitrate.Value;
-            bitrateLbl.Text = "качество JPEG  6";
+            bitrate.ValueChanged += (s, e) => bitrateLbl.Text = Lang.T("качество JPEG  ", "JPEG quality  ") + bitrate.Value;
+            bitrateLbl.Text = Lang.T("качество JPEG  ", "JPEG quality  ") + "6";
             bitrateLbl.ForeColor = Color.FromArgb(122, 168, 154);
             Add(bitrateLbl, 16, y, 300, 16); y += 18;
             Add(bitrate, 16, y, 508, 40); y += 44;
 
-            start.Text = "транслировать";
+            start.Text = Lang.T("транслировать", "stream");
             StyleAction(start);
             start.Click += (s, e) => Toggle();
             Add(start, 16, y, 508, 36); y += 48;
 
             status.ForeColor = Color.FromArgb(53, 232, 160);
-            status.Text = "найди очки или введи IP";
+            status.Text = Lang.T("найди очки или введи IP", "find the glasses or type an IP");
             Add(status, 16, y, 508, 36); y += 36;
             stats.ForeColor = Color.FromArgb(122, 168, 154);
             Add(stats, 16, y, 508, 22); y += 26;
-            Add(Muted("Виртуальный дисплей включается только на время трансляции и гаснет, когда она останавливается."), 16, y, 508, 36);
+            Add(Muted(Lang.T("Виртуальный дисплей включается только на время трансляции и гаснет, когда она останавливается.", "The virtual display turns on only while a stream is running and turns off when it stops.")), 16, y, 508, 36);
 
             tick.Interval = 400;
             tick.Tick += (s, e) =>
@@ -199,21 +201,21 @@ namespace GlassCast
                 {
                     string off = IddSetup.SetVirtual(false);
                     ReloadMonitors();
-                    status.Text = off ?? "остановлено";
+                    status.Text = off ?? Lang.Stopped;
                 }
                 streamWasOn = live.Running;
                 if (live.Running)
                 {
                     status.Text = live.Status;
-                    stats.Text = live.Fps + " к/с  ·  " + live.Kbps + " кбит/с  ·  кадров " + live.Frames;
+                    stats.Text = live.Fps + Lang.T(" к/с  ·  ", " fps  ·  ") + live.Kbps + Lang.T(" кбит/с  ·  кадров ", " kbps  ·  frames ") + live.Frames;
                 }
                 else
                 {
                     stats.Text = "";
-                    if (live.Status != "готов" && live.Status != "остановлено")
+                    if (live.Status != Lang.Ready && live.Status != Lang.Stopped)
                         status.Text = live.Status;
                 }
-                start.Text = live.Running ? "стоп" : "транслировать";
+                start.Text = live.Running ? Lang.T("стоп", "stop") : Lang.T("транслировать", "stream");
             };
             tick.Start();
 
@@ -221,12 +223,12 @@ namespace GlassCast
             Shown += (s, e) =>
             {
                 if (Screens.Glass() == null) return;
-                status.Text = "выключаю виртуальный экран…";
+                status.Text = Lang.T("выключаю виртуальный экран…", "turning the virtual display off…");
                 Refresh();
                 string off = IddSetup.SetVirtual(false);
                 ReloadMonitors();
                 SyncSource();
-                status.Text = off ?? "виртуальный экран выключен — включится на время трансляции";
+                status.Text = off ?? Lang.T("виртуальный экран выключен — включится на время трансляции", "virtual display is off — it turns on while you stream");
             };
             FormClosed += (s, e) =>
             {
@@ -250,24 +252,24 @@ namespace GlassCast
 
         void Scan()
         {
-            status.Text = "ищу очки…";
+            status.Text = Lang.T("ищу очки…", "looking for glasses…");
             Refresh();
             found = Discover.Scan(3000, ip.Text);
             glasses.Items.Clear();
             foreach (var g in found) glasses.Items.Add(g);
-            if (found.Count == 0) status.Text = "очки не ответили · введи IP с экрана очков";
+            if (found.Count == 0) status.Text = Lang.T("очки не ответили · введи IP с экрана очков", "glasses did not answer · type the IP shown on them");
             else
             {
                 glasses.SelectedIndex = 0;
                 ip.Text = found[0].Host;
-                status.Text = "нашёл " + found.Count;
+                status.Text = Lang.T("нашёл ", "found ") + found.Count;
             }
         }
 
         void PickTyped()
         {
             if (ip.Text.Trim().Length == 0) return;
-            status.Text = "беру " + ip.Text.Trim();
+            status.Text = Lang.T("беру ", "using ") + ip.Text.Trim();
         }
 
         void ReloadMonitors()
@@ -295,7 +297,7 @@ namespace GlassCast
             }
             if (windows.Items.Count > 0)
                 windows.SelectedIndex = pick >= 0 ? pick : 0;
-            status.Text = "окон " + windows.Items.Count;
+            status.Text = Lang.T("окон ", "windows ") + windows.Items.Count;
         }
 
         void PickZone()
@@ -310,7 +312,7 @@ namespace GlassCast
                         zone = dlg.Picked;
                         zoneLbl.Text = zone.Width + "×" + zone.Height + "  @ " + zone.X + "," + zone.Y;
                         source.SelectedIndex = 1;
-                        status.Text = "зона " + zoneLbl.Text;
+                        status.Text = Lang.T("зона ", "region ") + zoneLbl.Text;
                     }
                 }
             }
@@ -328,7 +330,7 @@ namespace GlassCast
             canvas.FormClosed += (s2, e2) => { if (canvas == s2) canvas = null; };
             canvas.Show(this);
             source.SelectedIndex = 3;
-            status.Text = "холст открыт · F11 на весь монитор · это не виртуальный дисплей Windows";
+            status.Text = Lang.T("холст открыт · F11 на весь монитор · это не виртуальный дисплей Windows", "canvas is open · F11 fills the monitor · this is not a Windows virtual display");
         }
 
         Rectangle SourceRect()
@@ -367,7 +369,7 @@ namespace GlassCast
                     if (screens[i].Name == g.Name)
                     {
                         monitors.SelectedIndex = i;
-                        status.Text = "виртуальный дисплей: " + screens[i];
+                        status.Text = Lang.T("виртуальный дисплей: ", "virtual display: ") + screens[i];
                         return;
                     }
                 }
@@ -377,7 +379,7 @@ namespace GlassCast
 
         void InstallIdd()
         {
-            status.Text = "устанавливаю драйвер…";
+            status.Text = Lang.T("устанавливаю драйвер…", "installing the driver…");
             Refresh();
             try
             {
@@ -407,25 +409,25 @@ namespace GlassCast
                 live.Stop();
                 string off = Screens.Glass() != null ? IddSetup.SetVirtual(false) : null;
                 ReloadMonitors();
-                status.Text = off ?? "остановлено";
+                status.Text = off ?? Lang.Stopped;
                 streamWasOn = false;
                 return;
             }
             string host = ip.Text.Trim();
             if (host.Length == 0)
             {
-                status.Text = "нет адреса очков";
+                status.Text = Lang.T("нет адреса очков", "no glasses address");
                 return;
             }
             int srcMode = source.SelectedIndex;
             if (srcMode == 1 && (zone.Width < 32 || zone.Height < 32))
             {
-                status.Text = "сначала выдели зону";
+                status.Text = Lang.T("сначала выдели зону", "pick a region first");
                 return;
             }
             if (srcMode == 2 && windows.SelectedItem == null)
             {
-                status.Text = "выбери окно программы";
+                status.Text = Lang.T("выбери окно программы", "choose an app window");
                 return;
             }
             if (srcMode == 3 && (canvas == null || canvas.IsDisposed))
@@ -435,12 +437,12 @@ namespace GlassCast
             }
             if (srcMode == 4)
             {
-                status.Text = "включаю виртуальный экран…";
+                status.Text = Lang.T("включаю виртуальный экран…", "turning the virtual display on…");
                 Refresh();
                 string on = IddSetup.SetVirtual(true);
                 if (on != null) { status.Text = on; return; }
                 ReloadMonitors();
-                if (Screens.Glass() == null) { status.Text = "виртуальный экран не появился"; return; }
+                if (Screens.Glass() == null) { status.Text = Lang.T("виртуальный экран не появился", "the virtual display did not appear"); return; }
             }
             else if (Screens.Glass() != null)
             {

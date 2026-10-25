@@ -18,6 +18,7 @@ import dev.glasscast.proto.Beacon
 import dev.glasscast.proto.Hello
 import dev.glasscast.proto.Lan
 import dev.glasscast.proto.Packet
+import dev.glasscast.proto.Text
 import dev.glasscast.proto.Wire
 import dev.glasscast.receiver.databinding.ActivityCastBinding
 import kotlinx.coroutines.Job
@@ -92,7 +93,7 @@ class CastActivity : AppCompatActivity() {
                 ui.picture.spin = if (codec == "mjpg") rotation else 0
                 fitVideo()
                 server?.requestKeyframe()
-                ui.picture.overlay = "поворот $rotation°"
+                ui.picture.overlay = Text.t("поворот $rotation°", "rotation $rotation°")
                 ui.picture.invalidate()
                 return true
             }
@@ -143,7 +144,10 @@ class CastActivity : AppCompatActivity() {
                 tick()
             }
         }
-        ui.picture.overlay = "GlassCast\n${ipHint()}:${Wire.TCP_PORT}\nждём источник"
+        ui.picture.overlay = Text.t(
+            "GlassCast\n${ipHint()}:${Wire.TCP_PORT}\nждём источник",
+            "GlassCast\n${ipHint()}:${Wire.TCP_PORT}\nwaiting for a sender"
+        )
         ui.picture.invalidate()
     }
 
@@ -204,7 +208,10 @@ class CastActivity : AppCompatActivity() {
         sink = null
         jpeg?.flush()
         ui.picture.clear()
-        ui.picture.overlay = "связь с $who разорвана\n${ipHint()}:${Wire.TCP_PORT}\nждём источник"
+        ui.picture.overlay = Text.t(
+            "связь с $who разорвана\n${ipHint()}:${Wire.TCP_PORT}\nждём источник",
+            "lost $who\n${ipHint()}:${Wire.TCP_PORT}\nwaiting for a sender"
+        )
         ui.video.visibility = View.INVISIBLE
         ui.picture.invalidate()
     }
@@ -227,7 +234,10 @@ class CastActivity : AppCompatActivity() {
         lastRendered = rendered
         val h = hello
         if (h != null) {
-            ui.picture.overlay = "${h.name}  $inFps→$outFps к/с  $kbps кбит  ${ipHint()}"
+            ui.picture.overlay = Text.t(
+                "${h.name}  $inFps→$outFps к/с  $kbps кбит  ${ipHint()}",
+                "${h.name}  $inFps→$outFps fps  $kbps kbps  ${ipHint()}"
+            )
             ui.picture.postInvalidate()
         }
     }

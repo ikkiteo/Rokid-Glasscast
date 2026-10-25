@@ -58,9 +58,9 @@ namespace GlassCast
 
         public static string Status()
         {
-            if (UsbFolder() == null) return "нет пакета драйвера driver\\usbmmidd";
-            if (Screens.Glass() != null) return "виртуальный монитор включён";
-            return "виртуальный экран выключен — включится на время трансляции";
+            if (UsbFolder() == null) return Lang.T("нет пакета драйвера driver\\usbmmidd", "driver package driver\\usbmmidd is missing");
+            if (Screens.Glass() != null) return Lang.T("виртуальный монитор включён", "virtual monitor is on");
+            return Lang.T("виртуальный экран выключен — включится на время трансляции", "virtual display is off — it turns on while you stream");
         }
 
         public static string SetVirtual(bool on)
@@ -75,10 +75,10 @@ namespace GlassCast
                     return null;
                 }
                 string ans = AskReady("on");
-                if (ans == null) return "не удалось включить службу экрана" + SetupNote();
-                if (!ans.StartsWith("ok")) return "виртуальный экран: " + ans;
+                if (ans == null) return Lang.T("не удалось включить службу экрана", "could not start the display service") + SetupNote();
+                if (!ans.StartsWith("ok")) return Lang.T("виртуальный экран: ", "virtual display: ") + ans;
                 Monitor mon = WaitForGlass(12);
-                if (mon == null) return "виртуальный экран не появился";
+                if (mon == null) return Lang.T("виртуальный экран не появился", "the virtual display did not appear");
                 SetMode(mon, 1920, 1080);
                 ExtendDesktop();
                 for (int i = 0; i < 10; i++)
@@ -93,15 +93,15 @@ namespace GlassCast
             for (int n = 0; n < 4 && Screens.Glass() != null; n++)
             {
                 string ans = AskReady("off");
-                if (ans == null) return "не удалось выключить виртуальный экран" + SetupNote();
-                if (!ans.StartsWith("ok")) return "не выключил экран: " + ans;
+                if (ans == null) return Lang.T("не удалось выключить виртуальный экран", "could not turn the virtual display off") + SetupNote();
+                if (!ans.StartsWith("ok")) return Lang.T("не выключил экран: ", "did not turn the display off: ") + ans;
                 for (int i = 0; i < 16; i++)
                 {
                     if (Screens.Glass() == null) return null;
                     System.Threading.Thread.Sleep(200);
                 }
             }
-            return Screens.Glass() == null ? null : "виртуальный экран не погас";
+            return Screens.Glass() == null ? null : Lang.T("виртуальный экран не погас", "the virtual display stayed on");
         }
 
         static string AskReady(string cmd)
@@ -148,9 +148,9 @@ namespace GlassCast
 
         public static string Install()
         {
-            if (!IsAdmin()) return "нужны права администратора";
+            if (!IsAdmin()) return Lang.T("нужны права администратора", "administrator rights are required");
             string usb = UsbFolder();
-            if (usb == null) return "нет driver\\usbmmidd\\usbmmidd_v2 рядом с программой";
+            if (usb == null) return Lang.T("нет driver\\usbmmidd\\usbmmidd_v2 рядом с программой", "driver\\usbmmidd\\usbmmidd_v2 is not next to the program");
             return InstallUsb(usb);
         }
 
@@ -158,7 +158,7 @@ namespace GlassCast
         {
             string exe = Path.Combine(dir, "deviceinstaller64.exe");
             string inst = Run(exe, "install usbmmIdd.inf usbmmidd", 120000, dir);
-            if (inst != null && inst.StartsWith("FAIL")) return "установка драйвера: " + inst.Substring(5).Trim();
+            if (inst != null && inst.StartsWith("FAIL")) return Lang.T("установка драйвера: ", "driver install: ") + inst.Substring(5).Trim();
             string svc = VddCtl.InstallService();
             for (int i = 0; i < 4; i++)
             {
@@ -167,8 +167,8 @@ namespace GlassCast
                 if (Screens.Glass() == null) break;
                 System.Threading.Thread.Sleep(300);
             }
-            if (svc != null) return "Драйвер поставлен, но служба экрана не запустилась: " + svc + " Драйвер — USB Mobile Monitor, Amyuni Technologies.";
-            return "Драйвер экрана установлен (USB Mobile Monitor, Amyuni Technologies). Виртуальный монитор включается только на время трансляции.";
+            if (svc != null) return Lang.T("Драйвер поставлен, но служба экрана не запустилась: ", "The driver is installed, but the display service did not start: ") + svc + Lang.T(" Драйвер — USB Mobile Monitor, Amyuni Technologies.", " The driver is USB Mobile Monitor by Amyuni Technologies.");
+            return Lang.T("Драйвер экрана установлен (USB Mobile Monitor, Amyuni Technologies). Виртуальный монитор включается только на время трансляции.", "Display driver installed (USB Mobile Monitor, Amyuni Technologies). The virtual monitor turns on only while you stream.");
         }
 
         static HashSet<string> MonitorNames()
@@ -204,25 +204,25 @@ namespace GlassCast
 
         static string InstallIddSampleUnused()
         {
-            if (!IsAdmin()) return "нужны права администратора";
+            if (!IsAdmin()) return Lang.T("нужны права администратора", "administrator rights are required");
             string dir = DriverFolder();
             string inf = Path.Combine(dir, "IddSampleDriver.inf");
             string dll = DllPath(dir);
-            if (!File.Exists(inf)) return "нет " + inf;
-            if (dll == null) return "нет IddSampleDriver.dll";
+            if (!File.Exists(inf)) return Lang.T("нет ", "missing ") + inf;
+            if (dll == null) return Lang.T("нет IddSampleDriver.dll", "IddSampleDriver.dll is missing");
 
             string copy = Path.Combine(dir, "IddSampleDriver.dll");
             if (!string.Equals(dll, copy, StringComparison.OrdinalIgnoreCase))
             {
                 try { File.Copy(dll, copy, true); }
-                catch (Exception e) { return "не скопировал dll: " + e.Message; }
+                catch (Exception e) { return Lang.T("не скопировал dll: ", "could not copy the dll: ") + e.Message; }
             }
 
             if (!TestSignActive())
             {
                 string boot = EnableTestSigning();
                 if (boot != null) return boot;
-                return "Тестовая подпись включена. Перезагрузи компьютер и снова нажми «драйвер дисплея». Без перезагрузки Windows этот драйвер не загрузит.";
+                return Lang.T("Тестовая подпись включена. Перезагрузи компьютер и снова нажми «драйвер дисплея». Без перезагрузки Windows этот драйвер не загрузит.", "Test signing is on. Reboot, then press Display driver again. Windows will not load this driver before a reboot.");
             }
 
             string signed = Sign(dir);
@@ -248,8 +248,8 @@ namespace GlassCast
             ExtendDesktop();
             if (mon == null) mon = WaitForGlass(10);
             if (mon == null)
-                return "драйвер поставлен, монитор ещё не виден. Параметры → Система → Экран → несколько дисплеев → Расширить.";
-            return "виртуальный монитор GlassCast включён, рабочий стол расширен. Выбери источник «виртуальный дисплей GlassCast» и транслируй. Окна перетаскиваются на этот экран как на обычный монитор.";
+                return Lang.T("драйвер поставлен, монитор ещё не виден. Параметры → Система → Экран → несколько дисплеев → Расширить.", "The driver is installed, but the monitor is not visible yet. Settings → System → Display → Multiple displays → Extend.");
+            return Lang.T("виртуальный монитор GlassCast включён, рабочий стол расширен. Выбери источник «виртуальный дисплей GlassCast» и транслируй. Окна перетаскиваются на этот экран как на обычный монитор.", "The GlassCast virtual monitor is on and the desktop is extended. Choose the GlassCast virtual display source and stream. Drag windows onto it like any other monitor.");
         }
 
         static string DllPath(string dir)
@@ -266,10 +266,10 @@ namespace GlassCast
         static string Sign(string dir)
         {
             string script = Path.GetFullPath(Path.Combine(dir, "..", "sign.ps1"));
-            if (!File.Exists(script)) return "нет " + script;
+            if (!File.Exists(script)) return Lang.T("нет ", "missing ") + script;
             string output = Run("powershell.exe", "-NoProfile -ExecutionPolicy Bypass -File \"" + script + "\" -Dir \"" + dir + "\"", 120000);
             if (output != null && output.StartsWith("FAIL")) return output.Substring(5).Trim();
-            if (!File.Exists(Path.Combine(dir, "GlassCastIdd.cat"))) return "каталог драйвера не создан. Нужен Windows SDK (inf2cat, signtool).";
+            if (!File.Exists(Path.Combine(dir, "GlassCastIdd.cat"))) return Lang.T("каталог драйвера не создан. Нужен Windows SDK (inf2cat, signtool).", "The driver catalog was not created. The Windows SDK (inf2cat, signtool) is required.");
             return null;
         }
 
@@ -358,9 +358,9 @@ namespace GlassCast
                 };
                 if (!string.IsNullOrEmpty(cwd)) info.WorkingDirectory = cwd;
                 var p = Process.Start(info);
-                if (p == null) return "FAIL не запустился " + file;
+                if (p == null) return "FAIL " + Lang.T("не запустился ", "did not start ") + file;
                 string o = p.StandardOutput.ReadToEnd() + p.StandardError.ReadToEnd();
-                if (!p.WaitForExit(ms)) return "FAIL таймаут " + file;
+                if (!p.WaitForExit(ms)) return "FAIL " + Lang.T("таймаут ", "timed out ") + file;
                 if (p.ExitCode != 0 && p.ExitCode != 3010) return "FAIL " + file + " " + p.ExitCode + " " + o;
                 return o;
             }
@@ -428,7 +428,7 @@ namespace GlassCast
                 bool reboot;
                 if (!UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, Hwid, inf, INSTALLFLAG_FORCE, out reboot))
                 {
-                    err = "UpdateDriver 0x" + Marshal.GetLastWin32Error().ToString("X") + " (тестовая подпись должна быть включена в текущей загрузке)";
+                    err = "UpdateDriver 0x" + Marshal.GetLastWin32Error().ToString("X") + Lang.T(" (тестовая подпись должна быть включена в текущей загрузке)", " (test signing must be on for this boot)");
                     return false;
                 }
                 return true;

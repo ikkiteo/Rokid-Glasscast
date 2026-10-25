@@ -300,7 +300,7 @@ namespace GlassCast
     sealed class Streamer
     {
         public volatile bool Running;
-        public volatile string Status = "готов";
+        public volatile string Status = Lang.Ready;
         public volatile int Fps, Kbps;
         long frames;
         public long Frames { get { return Interlocked.Read(ref frames); } }
@@ -340,7 +340,7 @@ namespace GlassCast
         public void Stop()
         {
             Running = false;
-            if (Status == "готов" || Status.StartsWith("трансляция")) Status = "остановлено";
+            if (Status == Lang.Ready || Status.StartsWith(Lang.OnAir)) Status = Lang.Stopped;
             Socket s;
             lock (pipeLock) s = pipe;
             if (s != null)
@@ -382,7 +382,7 @@ namespace GlassCast
             int w, int h, int fps, int bitrate, int rotate,
             Grabber grab)
         {
-            live.Status = "подключаюсь к " + host + "…";
+            live.Status = Lang.T("подключаюсь к ", "connecting to ") + host + "…";
             while (live.Running)
             {
                 try
@@ -393,7 +393,7 @@ namespace GlassCast
                         sock.SendBufferSize = 64 * 1024;
                         var ar = sock.BeginConnect(host, port, null, null);
                         if (!ar.AsyncWaitHandle.WaitOne(8000, false))
-                            throw new TimeoutException("очки не приняли TCP " + host + ":" + port);
+                            throw new TimeoutException(Lang.T("очки не приняли TCP ", "glasses did not accept TCP ") + host + ":" + port);
                         sock.EndConnect(ar);
                         if (!live.Running) break;
                         live.Bind(sock);
@@ -405,7 +405,7 @@ namespace GlassCast
                         int quality = BitrateToQuality(bitrate);
                         using (var enc = new JpegEnc(w, h, quality))
                         {
-                            live.Status = "трансляция на " + host + " · JPEG " + w + "×" + h;
+                            live.Status = Lang.OnAirTo(host) + " · JPEG " + w + "×" + h;
                             if (!string.IsNullOrEmpty(grab.Note)) live.Status += " · " + grab.Note;
                             var ctl = new Thread(() => ReadControlJpeg(ns, live, enc));
                             ctl.IsBackground = true;

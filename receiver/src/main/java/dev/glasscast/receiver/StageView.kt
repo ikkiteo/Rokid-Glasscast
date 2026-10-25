@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import dev.glasscast.proto.Text
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 class StageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : View(ctx, attrs) {
 
-    @Volatile var overlay = "GlassCast\nждём подключения"
+    @Volatile var overlay = Text.t("GlassCast\nждём подключения", "GlassCast\nwaiting for a sender")
     @Volatile var connected = false
     @Volatile var cover = true
     @Volatile var spin = 0
@@ -49,7 +50,7 @@ class StageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = n
         connected = false
         cover = true
         spin = 0
-        overlay = "GlassCast\nждём подключения"
+        overlay = Text.t("GlassCast\nждём подключения", "GlassCast\nwaiting for a sender")
         postInvalidate()
     }
 

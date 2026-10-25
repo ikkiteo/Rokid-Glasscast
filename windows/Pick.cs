@@ -22,7 +22,7 @@ namespace GlassCast
             DoubleBuffered = true;
             KeyPreview = true;
             ShowInTaskbar = false;
-            Text = "зона экрана";
+            Text = Lang.T("зона экрана", "screen region");
         }
 
         protected override void OnLoad(EventArgs e)
@@ -78,7 +78,7 @@ namespace GlassCast
                 using (var f = new Font("Consolas", 16f))
                 using (var br = new SolidBrush(Color.FromArgb(53, 232, 160)))
                 {
-                    string t = "зажми и выдели зону   Esc — отмена";
+                    string t = Lang.T("зажми и выдели зону   Esc — отмена", "drag to pick a region    Esc cancels");
                     Size sz = TextRenderer.MeasureText(t, f);
                     e.Graphics.DrawString(t, f, br, (Width - sz.Width) / 2f, Height / 2f);
                 }

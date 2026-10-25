@@ -1,60 +1,82 @@
-# GlassCast
+<p align="center">
+  <a href="README.en.md">
+    <img alt="English" src="https://img.shields.io/badge/English-238636?style=for-the-badge&logo=googletranslate&logoColor=white">
+  </a>
+</p>
 
-Отдельный проект: экран телефона или компьютера на очках Rokid с малой задержкой.
+<h1 align="center">GlassCast</h1>
 
-Три программы, одна сеть.
+<p align="center">
+  Экран телефона или компьютера на очках Rokid.<br>
+  Одна Wi‑Fi сеть, Motion JPEG, чёрные поля на панели не светятся.
+</p>
 
-| что | куда | зачем |
+<p align="center">
+  <a href="https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/v2.1.0"><img alt="v2.1.0" src="https://img.shields.io/badge/release-v2.1.0-1f6feb?style=flat-square"></a>
+  <a href="PROTOCOL.md"><img alt="protocol" src="https://img.shields.io/badge/protocol-GCS1-6e7681?style=flat-square"></a>
+</p>
+
+Русская страница. Английский текст и английские сборки — по зелёной кнопке сверху.
+
+## Скачать
+
+Обе версии — одни и те же программы. Отличается только язык интерфейса. На очки и телефон ставится один APK: второй язык заменяет первый.
+
+| | Русский | English |
 |---|---|---|
-| `receiver` | очки | слушает, декодирует H.264, рисует на панели |
-| `sender` | телефон | MediaProjection → JPEG |
-| `windows/GlassCast-new.exe` | ПК | захват монитора или отдельного окна → H.264 |
+| Очки | [GlassCast-glasses-ru.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-glasses-ru.apk) | [GlassCast-glasses-en.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-glasses-en.apk) |
+| Телефон | [GlassCast-phone-ru.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-phone-ru.apk) | [GlassCast-phone-en.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-phone-en.apk) |
+| Компьютер | [GlassCast-PC-ru.zip](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-PC-ru.zip) | [GlassCast-PC-en.zip](https://github.com/ikkiteo/Rokid-Glasscast/releases/download/v2.1.0/GlassCast-PC-en.zip) |
 
-Протокол — в `PROTOCOL.md`. Очки — сервер, отправитель только подключается.
+Архив для ПК уже собран: `GlassCast.exe`, `VddHost.exe` и папка драйвера. Распакуй и запускай exe из этой папки. .NET Framework 4.8, отдельная установка рантайма не нужна.
 
-## Как пользоваться
+Драйвер виртуального монитора — **USB Mobile Monitor** компании Amyuni Technologies. Он не вшит в exe. Лицензия лежит рядом: `driver/usbmmidd/usbmmidd_v2/License.txt`.
 
-1. Установите приложения на очки и телефон и открой **GlassCast**. На экране появится IP.
-2. Телефон и ПК должны быть в той же Wi‑Fi сети, что и очки.
-3. На телефоне открой **GlassCast Phone**, нажми «найти очки», разреши захват экрана.
-4. На ПК запусти GlassCast-new.exe, «найти очки», выбери режим и «транслировать».
+## Как это устроено
 
-## Транслирование на ПК
+Очки слушают сеть. Телефон и компьютер только подключаются.
 
-**ВЫБОР ИСТОЧНИКА** — позволяет выбрать: 
+```text
+телефон ──JPEG──┐
+                ├── TCP 47810 ── очки Rokid
+компьютер ──────┘
+         поиск по UDP 47811
+```
 
-монитор - транслирует выбранный монитор как есть.
+| программа | куда | что делает |
+|---|---|---|
+| `receiver` | очки | принимает JPEG и рисует его по центру панели |
+| `sender` | телефон | снимает экран и шлёт JPEG |
+| `windows` | ПК | снимает монитор, окно, зону или виртуальный дисплей |
 
-зону экрана - транслирует выбранную зону на экране.
+Протокол описан в [PROTOCOL.md](PROTOCOL.md).
 
-окно программы - позволяет транслировать окно выбранной программы.
+## Быстрый старт
 
-холст очков - пока не работает.
+1. Поставь приложение очков и открой его. На панели будет IP.
+2. Телефон или ПК должен быть в той же Wi‑Fi сети.
+3. На телефоне: **GlassCast Phone** → найти очки → разрешить захват экрана.
+4. На ПК: распакуй архив → `GlassCast.exe` → найти очки → **транслировать**.
 
-виртуальный дисплей - транслирует создаваемый программой виртуальный дисплей, который появляется после установки драйвера.
+На очках одно нажатие поворачивает картинку на 90°. Двойное просит новый кадр. Громкость меняет качество потока.
 
+## Компьютер
 
-**Виртуальный дисплей** — «драйвер дисплея» ставит монитор GlassCast и расширяет на него рабочий стол. Перетащи туда окна и транслируй этот источник. Поля вокруг картинки на очках чёрные: на панели они не светятся.
+**Монитор, зона, окно.** В очки уходит выбранный кусок рабочего стола. Захват идёт через DXGI, чтобы курсор на основном экране не мигал.
+
+**Виртуальный дисплей.** Кнопка «драйвер дисплея» один раз ставит драйвер Amyuni. Монитор 1920×1080 включается только на время трансляции этого источника и гаснет, когда трансляция останавливается. Первый запуск спросит права администратора — дальше служба включает экран сама. Перетащи на него окна и транслируй.
+
+**Холст.** Запасное окно без драйвера. F11 разворачивает его на текущий монитор. Это не отдельный дисплей Windows.
+
+Поля над и под картинкой чёрные: на очках эти пиксели не светятся.
 
 ## Сборка
 
-```
-cd Rokid-Glasscast
-gradlew.bat :receiver:assembleDebug :sender:assembleDebug --offline
+```bat
+gradlew.bat :receiver:assembleDebug :sender:assembleDebug
 windows\build.bat
 ```
 
-APK:
+Android-сборки: flavor `ru` и `en`. Готовые APK лежат в `receiver/build/outputs/apk/` и `sender/build/outputs/apk/`.
 
-[dist\GlassCast-glasses.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — очки
-[dist\GlassCast-phone.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — телефон
-
-Exe: [dist\GlassCast-new.exe](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) (один файл, .NET Framework 4.8, ставить нужно только driver\usbmmidd при использовании виртуального дисплея).
-
-И телефон, и Windows шлют Motion-JPEG: приёмник на очках рисует его напрямую, без аппаратного декодера. Поля над и под картинкой — чистый чёрный, на очках они не загораются.
-
-## ВАЖНО
-
-**ВИРТУАЛЬНЫЙ ДИСПЛЕЙ НЕ ЗАРАБОТАЕТ БЕЗ УСТАНОВКИ ДРАЙВЕРА driver\usbmmidd**
-
-**ПОСЛЕ УСТАНОВКИ ДРАЙВЕРА WINDOWS МОЖЕТ ВКЛЮЧИТЬ ТЕСТОВЫЙ РЕЖИМ - ВЫКЛЮЧЕНИЕ ТЕСТОГО РЕЖИМА КОМАНДАМИ В CMD "bcdedit -set TESTSIGNING OFF" И "bcdedit -set NOINTEGRITYCHECKS OFF"**
+Windows: `windows\out\ru` и `windows\out\en`. В каждой папке `GlassCast.exe` и `VddHost.exe`. Английская собирается с `/define:EN`.

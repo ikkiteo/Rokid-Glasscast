@@ -11,8 +11,21 @@ android {
         applicationId = "dev.glasscast.receiver"
         minSdk = 28
         targetSdk = 32
-        versionCode = 4
-        versionName = "2.0.2"
+        versionCode = 5
+        versionName = "2.1.0"
+    }
+
+    flavorDimensions += "lang"
+    productFlavors {
+        create("ru") {
+            dimension = "lang"
+            isDefault = true
+            buildConfigField("boolean", "EN", "false")
+        }
+        create("en") {
+            dimension = "lang"
+            buildConfigField("boolean", "EN", "true")
+        }
     }
 
     buildTypes {
@@ -27,7 +40,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
-    buildFeatures { viewBinding = true }
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
 }
 
 dependencies {

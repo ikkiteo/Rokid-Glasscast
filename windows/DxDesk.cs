@@ -148,7 +148,7 @@ namespace GlassCast
                 }
                 if (!keepAd) Release(ad);
             }
-            if (bestOut == IntPtr.Zero) return "DXGI не видит этот экран";
+            if (bestOut == IntPtr.Zero) return Lang.T("DXGI не видит этот экран", "DXGI cannot see this screen");
 
             Guid o1 = Output1;
             hr = Fn<QiFn>(bestOut, 0)(bestOut, ref o1, out output1);

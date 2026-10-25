@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
+import dev.glasscast.proto.Text as L
 import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -102,7 +103,7 @@ class SenderActivity : ComponentActivity() {
             val job = pending
             pending = null
             if (res.resultCode != RESULT_OK || data == null || job == null) {
-                Live.note("захват экрана не выдан")
+                Live.note(L.t("захват экрана не выдан", "screen capture was denied"))
                 return@rememberLauncherForActivityResult
             }
             CastService.start(this, job.host, job.port, job.w, job.h, job.fps, job.bitrate, res.resultCode, data)
@@ -116,13 +117,19 @@ class SenderActivity : ComponentActivity() {
                     .padding(20.dp)
             ) {
                 Text("GLASSCAST", color = Mint, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                Text("экран телефона → очки", color = Dim, fontFamily = FontFamily.Monospace, fontSize = 13.sp)
+                Text(L.t("экран телефона → очки", "phone screen → glasses"), color = Dim, fontFamily = FontFamily.Monospace, fontSize = 13.sp)
                 Spacer(Modifier.height(16.dp))
-                Text(snap.line, color = Fog, fontFamily = FontFamily.Monospace, fontSize = 14.sp)
+                Text(
+                    snap.line.ifBlank { L.t("найди очки в той же Wi‑Fi сети", "find the glasses on the same Wi‑Fi") },
+                    color = Fog, fontFamily = FontFamily.Monospace, fontSize = 14.sp
+                )
                 if (snap.running) {
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "${snap.fps} к/с · ${snap.kbps} кбит/с · кадров ${snap.frames}",
+                        L.t(
+                            "${snap.fps} к/с · ${snap.kbps} кбит/с · кадров ${snap.frames}",
+                            "${snap.fps} fps · ${snap.kbps} kbps · frames ${snap.frames}"
+                        ),
                         color = Mint,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 13.sp
@@ -131,21 +138,21 @@ class SenderActivity : ComponentActivity() {
                 Spacer(Modifier.height(18.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Action("найти очки", enabled = !scanning) {
+                    Action(L.t("найти очки", "find glasses"), enabled = !scanning) {
                         scanning = true
-                        Live.note("ищу очки в сети…")
+                        Live.note(L.t("ищу очки в сети…", "looking for glasses…"))
                         scope.launch {
                             glasses = Beacon.scan(this@SenderActivity, 2800, host)
                             scanning = false
-                            if (glasses.isEmpty()) Live.note("очки не ответили · введи IP с экрана очков")
+                            if (glasses.isEmpty()) Live.note(L.t("очки не ответили · введи IP с экрана очков", "glasses did not answer · type the IP from the glasses"))
                             else {
                                 picked = glasses.first()
                                 host = glasses.first().host
-                                Live.note("нашёл ${glasses.size}: ${glasses.first().host}")
+                                Live.note(L.t("нашёл ${glasses.size}: ${glasses.first().host}", "found ${glasses.size}: ${glasses.first().host}"))
                             }
                         }
                     }
-                    if (snap.running) Action("стоп", fill = false) { CastService.stop(this@SenderActivity) }
+                    if (snap.running) Action(L.t("стоп", "stop"), fill = false) { CastService.stop(this@SenderActivity) }
                 }
 
                 glasses.forEach { g ->
@@ -163,7 +170,7 @@ class SenderActivity : ComponentActivity() {
                             .padding(12.dp)
                     ) {
                         Text(g.name, color = Fog, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("${g.host}:${g.port} · панель ${g.width}×${g.height}", color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                        Text(L.t("${g.host}:${g.port} · панель ${g.width}×${g.height}", "${g.host}:${g.port} · panel ${g.width}×${g.height}"), color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
                     }
                 }
 
@@ -171,28 +178,28 @@ class SenderActivity : ComponentActivity() {
                 OutlinedTextField(
                     value = host,
                     onValueChange = { host = it.trim() },
-                    label = { Text("IP очков") },
+                    label = { Text(L.t("IP очков", "glasses IP")) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = fieldColors()
                 )
 
                 Spacer(Modifier.height(16.dp))
-                Text("картинка", color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                Text(L.t("картинка", "picture"), color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Chip("2× панель", preset == 0) { preset = 0 }
+                    Chip(L.t("2× панель", "2× panel"), preset == 0) { preset = 0 }
                     Chip("1280", preset == 1) { preset = 1 }
-                    Chip("экран", preset == 2) { preset = 2 }
+                    Chip(L.t("экран", "screen"), preset == 2) { preset = 2 }
                 }
                 Spacer(Modifier.height(10.dp))
-                Text("кадры в секунду", color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                Text(L.t("кадры в секунду", "frames per second"), color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Chip("30", fps == 30) { fps = 30 }
                     Chip("60", fps == 60) { fps = 60 }
                     Chip("90", fps == 90) { fps = 90 }
                 }
                 Spacer(Modifier.height(10.dp))
-                Text("качество  ${qualityOf(mbps)}", color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                Text(L.t("качество  ${qualityOf(mbps)}", "quality  ${qualityOf(mbps)}"), color = Dim, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
                 Slider(
                     value = mbps,
                     onValueChange = { mbps = it },
@@ -201,7 +208,7 @@ class SenderActivity : ComponentActivity() {
                 )
 
                 Spacer(Modifier.height(8.dp))
-                Action(if (snap.running) "перезапустить" else "транслировать", enabled = host.isNotBlank()) {
+                Action(if (snap.running) L.t("перезапустить", "restart") else L.t("транслировать", "stream"), enabled = host.isNotBlank()) {
                     val metrics = DisplayMetrics()
                     @Suppress("DEPRECATION")
                     windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -222,7 +229,10 @@ class SenderActivity : ComponentActivity() {
 
                 Spacer(Modifier.height(18.dp))
                 Text(
-                    "телефон и очки — одна Wi‑Fi сеть. на очках открой GlassCast и оставь его на экране. картинка уходит как JPEG, тем же путём, что и с компьютера. одно нажатие поворачивает картинку.",
+                    L.t(
+                        "телефон и очки — одна Wi‑Fi сеть. на очках открой GlassCast и оставь его на экране. картинка уходит как JPEG, тем же путём, что и с компьютера. одно нажатие поворачивает картинку.",
+                        "The phone and the glasses share one Wi‑Fi. Open GlassCast on the glasses and leave it on screen. The picture is JPEG, the same path as the PC. One tap rotates it."
+                    ),
                     color = Dim,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp,

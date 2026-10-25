@@ -207,7 +207,7 @@ namespace GlassCast
             if (t != null) return t;
             t = TryEnum(info, Mf.MFT_ENUM_FLAG_HARDWARE | Mf.MFT_ENUM_FLAG_ASYNCMFT);
             if (t != null) return t;
-            throw new InvalidOperationException("в Windows нет H.264 кодировщика (поставь Media Feature Pack)");
+            throw new InvalidOperationException(Lang.T("в Windows нет H.264 кодировщика (поставь Media Feature Pack)", "Windows has no H.264 encoder (install the Media Feature Pack)"));
         }
 
         public static int LastCreateHr;

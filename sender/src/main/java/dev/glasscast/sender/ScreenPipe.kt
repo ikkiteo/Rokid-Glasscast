@@ -11,6 +11,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import dev.glasscast.proto.FrameWriter
+import dev.glasscast.proto.Text
 import dev.glasscast.proto.Wire
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CountDownLatch
@@ -66,7 +67,7 @@ class ScreenPipe(
             }
             ready.countDown()
         }
-        if (!ready.await(8, TimeUnit.SECONDS)) error("захват экрана не открылся")
+        if (!ready.await(8, TimeUnit.SECONDS)) error(Text.t("захват экрана не открылся", "screen capture did not start"))
         fail?.let { throw it }
     }
 
@@ -117,7 +118,7 @@ class ScreenPipe(
             reader = null
             th.quitSafely()
             thread = null
-            error("система не открыла захват экрана")
+            error(Text.t("система не открыла захват экрана", "the system did not open screen capture"))
         }
         display = created
         Log.i(TAG, "jpeg ${w}x$h @$fps q=$quality")

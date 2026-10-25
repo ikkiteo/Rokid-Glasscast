@@ -2,6 +2,7 @@ package dev.glasscast.sender
 
 import android.app.Notification
 import android.app.NotificationChannel
+import dev.glasscast.proto.Text
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -31,7 +32,7 @@ class CastService : Service() {
 
     private val faults = CoroutineExceptionHandler { _, e ->
         Log.e(TAG, "fault", e)
-        Live.note("сбой: ${e.message ?: e.javaClass.simpleName}")
+        Live.note(Text.t("сбой: ${e.message ?: e.javaClass.simpleName}", "failed: ${e.message ?: e.javaClass.simpleName}"))
     }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + faults)
 
@@ -74,12 +75,12 @@ class CastService : Service() {
         val code = if (extraCode != 0) extraCode else lastCode
         val data = extraData ?: lastData
         if (code == 0 || data == null) {
-            Live.note("нет разрешения на захват экрана")
+            Live.note(Text.t("нет разрешения на захват экрана", "screen capture was not allowed"))
             stopSelf()
             return START_NOT_STICKY
         }
 
-        val note = notification("подключаюсь к $host")
+        val note = notification(Text.t("подключаюсь к $host", "connecting to $host"))
         if (Build.VERSION.SDK_INT >= 29) {
             startForeground(NOTE, note, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
         } else {
@@ -89,14 +90,14 @@ class CastService : Service() {
         val mgr = getSystemService(MediaProjectionManager::class.java)
         val proj = runCatching { mgr.getMediaProjection(code, data) }.getOrNull()
         if (proj == null) {
-            Live.note("система не выдала захват экрана")
+            Live.note(Text.t("система не выдала захват экрана", "the system did not grant screen capture"))
             stopSelf()
             return START_NOT_STICKY
         }
         projection = proj
         proj.registerCallback(object : MediaProjection.Callback() {
             override fun onStop() {
-                Live.note("захват экрана остановлен")
+                Live.note(Text.t("захват экрана остановлен", "screen capture stopped"))
                 stopSelf()
             }
         }, Handler(Looper.getMainLooper()))
@@ -151,7 +152,7 @@ class CastService : Service() {
             .setContentText(text)
             .setSmallIcon(android.R.drawable.presence_video_online)
             .setContentIntent(open)
-            .addAction(Notification.Action.Builder(null, "стоп", stop).build())
+            .addAction(Notification.Action.Builder(null, Text.t("стоп", "stop"), stop).build())
             .setOngoing(true)
             .build()
     }

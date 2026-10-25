@@ -83,7 +83,7 @@ namespace GlassCast
             {
                 if (c.FormatID == ImageFormat.Jpeg.Guid) return c;
             }
-            throw new InvalidOperationException("нет JPEG кодировщика GDI+");
+            throw new InvalidOperationException(Lang.T("нет JPEG кодировщика GDI+", "GDI+ has no JPEG encoder"));
         }
 
         public void Dispose()

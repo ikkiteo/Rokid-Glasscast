@@ -46,7 +46,7 @@ object Live {
 }
 
 data class Snap(
-    val line: String = "найди очки в той же Wi‑Fi сети",
+    val line: String = "",
     val running: Boolean = false,
     val connected: Boolean = false,
     val fps: Int = 0,
