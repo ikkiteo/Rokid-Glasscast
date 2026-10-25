@@ -44,7 +44,7 @@ windows\build.bat
 
 APK:
 
-- `receiver/build/outputs/apk/debug/receiver-debug.apk` — очки
+- `[receiver/build/outputs/apk/debug/receiver-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid)` — очки
 - `sender/build/outputs/apk/debug/sender-debug.apk` — телефон
 
 Exe: `windows/GlassCast.exe` (один файл, .NET Framework 4.8, ничего ставить не нужно).
