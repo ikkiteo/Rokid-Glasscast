@@ -44,9 +44,9 @@ windows\build.bat
 
 APK:
 
-- `[receiver/build/outputs/apk/debug/receiver-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid)` — очки
-- `sender/build/outputs/apk/debug/sender-debug.apk` — телефон
+[receiver/build/outputs/apk/debug/receiver-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — очки
+[sender/build/outputs/apk/debug/sender-debug.apk](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) — телефон
 
-Exe: `windows/GlassCast.exe` (один файл, .NET Framework 4.8, ничего ставить не нужно).
+Exe: [windows/GlassCast.exe](https://github.com/ikkiteo/Rokid-Glasscast/releases/tag/Rokid) (один файл, .NET Framework 4.8, ставить нужно только driver\usbmmidd при использовании виртуального дисплея).
 
 И телефон, и Windows шлют Motion-JPEG: приёмник на очках рисует его напрямую, без аппаратного декодера. Поля над и под картинкой — чистый чёрный, на очках они не загораются.
